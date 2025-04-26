@@ -1,0 +1,7 @@
+[project]
+name = "ChiseLLM"
+version = "0.1.0"
+description = "ChiseLLM Unleashing the Power of Reasoning LLMs for Chisel Agile Hardware Development"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["distilabel>=1.5.3", "jinja2>=3.1.6"]

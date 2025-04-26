@@ -1,0 +1,55 @@
+### wandb
+report_to: wandb
+run_name: ChiseLLM-32B
+
+### model
+model_name_or_path: models/Qwen/Qwen2.5-Coder-32B-Instruct
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+
+### dataset
+dataset_dir: datasets
+dataset: ChiseLLM-Completion,ChiseLLM-Decompile
+mix_strategy: interleave_under
+interleave_probs: 0.3,0.7
+template: qwen
+cutoff_len: 16384
+max_samples: 6000
+overwrite_cache: true
+preprocessing_num_workers: 32
+dataloader_persistent_workers: true
+dataloader_pin_memory: true
+dataloader_num_workers: 32
+
+### output
+output_dir: output/ChiseLLM/ChiseLLM-32B
+logging_steps: 1
+save_steps: 1000
+plot_loss: true
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 2
+learning_rate: 1.0e-5
+num_train_epochs: 2.3
+lr_scheduler_type: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0001
+bf16: true
+ddp_timeout: 180000000
+# overwrite_output_dir: true
+
+# speedup
+flash_attn: fa2
+
+# memory
+optim: paged_adamw_8bit
+gradient_checkpointing: true
+gradient_checkpointing_kwargs: 
+  use_reentrant: false
+deepspeed: config/ds/ds_z3_config.json
+sequence_parallel_size: 8
+sequence_parallel_mode: ulysses

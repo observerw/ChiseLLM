@@ -1,0 +1,75 @@
+You are tasked with **decompiling the given Verilog code into equivalent Chisel3 code**. Ensure your Chisel code is correct, efficient, and reusable.
+
+# Steps
+
+To make sure the final Chisel code is reusable and efficient, you are required to follow these steps to decompile the Verilog code:
+
+1. Analyze the Verilog code, directly mapping it to Chisel code without any optimizations or refactoring.
+2. Write a design specification (referred to as original design specification) of the Verilog code to completely describe its functionality, followed by several **design specification variations** (explained below).
+3. Implement an optimized and refactored version of the Chisel code to **cover all variations of the specification**.
+
+# Design Specification Variation
+
+A design specification variation refers to a modified version of the original design specification where specific functional/structural requirements are changed. The purpose of the variation is to model changes in context, requirements or constraints that may occur in the real-world RTL design process. A RTL design with high variability can be adapted to different variations with minimal refactoring effort.
+
+For now, we only consider the following types of variations:
+
+- Configurable Variation (`configure`): A modified version where tunable attributes (e.g., data width, cache depth) are extracted as configurable parameters without altering core functionality or interfaces. Modular code refactoring of the original design is often required to support parameterization.
+- Structural Variation (`structure`): A modified version that adapts hardware architecture (e.g., pipeline stages, memory organization, FSM encoding schemes), impacting timing/area while preserving functional equivalence. High-level abstraction of the original design is often required to accommodate different implementations of the same behavioral model.
+- Functional Variation (`function`): A modified version that alters input-output behavior (e.g., protocol version support, exception handling mechanisms, algorithmic implementation), directly modifying the design's functional requirements. Generalization refactoring of the original design is often required to transforming core functionality that are not directly related to peripheral functionality or input/output behavior into a generalized logic.
+
+For each original specification, **you are required to provide a `configure` variation and one of the `structure` or `function` variations**.
+
+- Each variations should be a complete specification that contains all necessary information of the original specification, and can be solitary used to implement a design.
+- Variation should be a design specification, not a code implementation.
+- Variations should be clear, reasonable, and strictly related to the original design specification.
+- The variations should be different from each other and not overlap.
+
+# Optimization and Refactoring
+
+The final Chisel code should be an optimized and refactored version of the original version that can cover all variations of the specification. To achieve this, you should select proper Chisel language features to address the variations, e.g. using config case class to provide configurable parameters, using abstract classes to extract common functionality, etc.
+
+{#{ tutorial }#}
+{% include "tutorial.md" ignore missing %}
+
+# Output
+
+Your output must include the following content, each within a Markdown code block with id and/or group identifiers (replace `<variation_type>` with the actual type (`structure`/`function`) you select):
+
+```scala {decompiled}
+// the direct mapping of the Verilog code to Chisel code
+```
+
+```text {specification}
+// The original design specification of the Verilog code
+```
+
+```text [variations] {configure}
+// The `configure` design specification variation
+```
+
+```text [variations] {<variation_type>}
+// The `<variation_type>` design specification variation
+```
+
+```scala {optimized}
+// The final optimized and refactored version of the Chisel3 code
+```
+
+# Requirements
+
+- Your thinking process should be comprehensive and well-reasoned, avoid repetitive thinking, keep it concise and informative.
+- Your thinking process should not only focus on implementing functionality correct code, but also syntactically correct code. That requires you to think about how to properly use Chisel language features.
+- Follow the format and instructions provided in the output section.
+
+# Extra Attention
+
+- When directly mapping to Chisel code, keep your thinking process simple, do not overthink. Focus on subsequent variations and optimizations.
+- For verilog module with single clock and reset, you can use the implicit clock and reset signal of the Chisel module for convenience.
+- For verilog features that are not directly supported in Chisel (e.g. negedge signal), you can use a similar feature or a simple workaround as a substitute, with proper comments explaining the workaround.
+
+# Request
+
+```verilog
+{{ source }}
+```

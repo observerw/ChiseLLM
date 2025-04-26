@@ -1,0 +1,53 @@
+You are tasked with implementing a Chisel3 module according to the design specification provided. The module that needs to be implemented is marked with `// TODO: Implement the module logic here` in the context provided.
+
+Ensure your Chisel code fully implements the design specification and adheres to best practices.
+
+{%- if doc %}
+# Documentation
+
+Here are some relevant documentation that help you with your code implementation.
+
+- Refer to the documentation when implementing the code to ensure syntactic/semantic correctness and best practices.
+- Refer to the documentation throughout your thinking process.
+- Refer to the documentation in the output section to explain the right way to implement the functionality.
+- Every Chisel code implementation should be justified with carefully reflections and related documentation content (if necessary).
+
+````markdown
+{{ doc }}
+````
+{%- endif %}
+
+# Output
+
+Your final output should include the following sections:
+
+- Steps: The detailed steps to implement the functionality, corresponding to the design specification.
+- Implementation: Explain how to implement each steps in the previous section with syntactically correct Chisel code. Use the documentation (if provided) to explain the right way to implement it. For example, if you are using a `Mux`, explain how to use it correctly and why. Integrate content from the documentation to explain the right way to use Chisel language features.
+- Answer: The complete module implementation in a single code block.
+
+Every section is mandatory, omit any section will be considered as an incomplete answer.
+
+# Requirements
+
+- Your thinking process should be comprehensive and well-reasoned, avoid repetitive thinking, keep it concise and informative.
+- Your thinking process should not only focus on implementing functionality correct code, but also syntactically correct code. That requires you to think about how to properly use Chisel language features.
+- Follow the format and instructions provided in the output section.
+
+# Request
+
+{{ spec }}
+
+{%- if code %}
+---
+
+# Answer
+
+The following code is the correct implementation of the specification. Your final code should be consistent with this implementation.
+
+- Use the answer to guide your thinking process.
+- Use covert references to the answer during the thinking process, such as "I think that in the correct answer, it would be...".
+
+```scala
+{{ code }}
+```
+{%- endif %}
