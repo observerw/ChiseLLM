@@ -6,6 +6,8 @@
 
 ChiseLLM is **a reasoning model optimized for the Chisel language**, designed to enhance agile hardware design capabilities.
 
+- [arxiv](https://arxiv.org/abs/2504.19144)
+
 ## Motivation
 
 - The demand for Domain-Specific Architecture (DSA) has driven the development of Agile Hardware Development Methodology (AHDM)
@@ -45,4 +47,19 @@ chisellm/
 │   ├── ChiseLLM-32B.yaml    # 32B model training config
 │   └── ds/                  # DeepSpeed configurations
 └── utils/                   # Utility functions
+```
+## Citation
+
+If you are interested in our work, please consider citing this, it would be greatly appreciated!
+
+```bibtex
+@misc{wang2025chisellmunleashingpowerreasoning,
+      title={ChiseLLM: Unleashing the Power of Reasoning LLMs for Chisel Agile Hardware Development}, 
+      author={Bowei Wang and Jiaran Gao and Yelai Feng and Renzhi Chen and Shanshan Li and Lei Wang},
+      year={2025},
+      eprint={2504.19144},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2504.19144}, 
+}
 ```
