@@ -1,0 +1,26 @@
+You are tasked with rating the given content based on the provided criteria.
+
+- The rating should be a number between 1 and 5, where 1 means the content is not up to the criteria at all, and 5 means it is excellent and meets all the criteria.
+- Your rating should be reasonable, objective, and based on the content provided.
+- Think carefully about each criterion and how well the content meets it before assigning a rating.
+
+# Output
+
+Your output should be a valid JSON object in a Markdown code block. The JSON object should contain:
+
+```json
+{
+  "rating": <number between 1 and 5>,
+  "explanation": "<string explaining the rating>"
+}
+```
+
+# Execution
+
+Content:
+
+{{ content }}
+
+Criteria:
+
+{{ criteria }}

@@ -1,0 +1,50 @@
+You are tasked with **decompiling the given Verilog module into equivalent Chisel3 module**.
+
+On the premise of ensuring syntax correctness and functional equivalence, you need to consider how to optimize and refactor the Chisel module to make a better **variability design**.
+
+Design variability refers to the adaptability of Chisel module design to changes in context, requirements, or constraints. The higher the variability, the lower the refactoring cost required for the module to adapt to different changes.
+
+To achieve a high variability design, you need to consider how to reasonably use Chisel language features to make parameterized, abstracted, and modular designs.
+
+# Requirements
+
+- All code must use Chisel 3 and Scala 2.13 syntax.
+- Module name and ports must strictly follow the specification, even if it will violate the Scala naming convention.
+- Code structure requirements:
+  - All internal signals and modules need meaningful names.
+  - Add comments to explain key functionality.
+  - Avoid generating redundant logic.
+- Do not define any additional ports or signals (e.g. extra clock or reset signals) not specified in the design specification.
+- In Chisel module, unconnected wires are not allowed. Make sure all output IO signals are assigned under all conditions.
+- Prioritize correctness over complexity; avoid introducing complex design that could lead to implementation errors.
+
+# Output Format
+
+Your output must include a `class {{ top }}` and a `object {{ top }}` that contains a method `apply()` to create an instance of the module.
+
+- The arguments of `apply()` are class parameters of `class {{ top }}` (if any), not the input ports.
+- The parameters of `apply()` must be defined with default values, so that it can be called without any arguments.
+
+Your output code must be **in a Markdown code block with `{result}` identifier**, as shown below:
+
+```scala {result}
+// ... other code if needed ...
+
+class {{ top }}(/* parameters */) extends Module {
+    // ... module implementation ...
+}
+
+object {{ top }} {
+    def apply(/* parameters */): {{ top }} = {
+        new {{ top }}(/* parameters */)
+    }
+}
+```
+
+# Request
+
+Verilog code:
+
+```verilog
+{{ code }}
+```

@@ -1,0 +1,143 @@
+You are an experienced hardware engineer who can proficiently use the Chisel language for RTL design and have a deep understanding of Chisel language features.
+
+Your task is to evaluate the **design variability** of a Chisel module.
+
+# Concept Explanation
+
+Design variability refers to a Chisel module's ability to adapt to changes in context, requirements, or constraints. The higher the variability, the lower the refactoring cost needed to adapt the module to different changes.
+
+Refactoring cost refers to: The amount of refactoring work needed to adapt the module to changes. For example:
+- High refactoring cost: If a module has hardcoded pipeline stages, changing the number of stages requires rewriting the datapath.
+- Low refactoring cost: If a module uses parameterized stages, variants only need to modify parameter values.
+
+Based on refactoring cost, a refactoring cost score can be given, ranging from 1-10, where higher scores indicate lower refactoring costs:
+- 1-3 points: Need to rewrite core logic/interfaces (e.g., hardcoded structures need complete refactoring)
+- 4-6 points: Need medium-scale modifications (e.g., partially parameterized but requires new logic)
+- 7-9 points: Only needs parameter adjustments or local adaptations (e.g., fully parameterized design)
+- 10 points: Existing design can directly support (e.g., implemented through reserved interfaces/parameters)
+
+A **design specification variation** is a modified version of the original design specification where certain functional/structural requirements have changed.
+- The purpose of variations is to simulate changes in context, requirements, or constraints that may occur during actual RTL design. RTL designs with high variability can adapt to different variants with minimal refactoring work.
+
+# Example
+
+Here's an example to illustrate how to perform the evaluation. For simplicity, the example doesn't include design specifications and variations; but in actual evaluation, specifications and variants will be provided.
+
+Here is an implementation of an adder module:
+
+```scala
+class Adder extends Module {
+  val io = IO(new Bundle {
+    val a = Input(UInt(32.W))
+    val b = Input(UInt(32.W))
+    val out = Output(UInt(32.W))
+  })
+  io.out := io.a + io.b
+}
+```
+
+This implementation doesn't have high variability:
+
+- To adapt to different data width variant requirements, all input/output ports and logic need to be modified, refactoring cost score is 3.
+- To adapt to different types of adders (like adders with carry), the entire module needs to be rewritten, refactoring cost score is 1.
+- To adapt to different operations (like subtractor), the module's operation logic needs to be rewritten, refactoring cost score is 4.
+- To adapt to different input/output types (like floating-point), both the module's input/output ports and operation logic need to be rewritten, refactoring cost score is 2.
+- Considering all evaluation results, the final score is \boxed{3}.
+
+Here is another implementation:
+
+```scala
+abstract class BinaryOperation[T <: Data](gen: T) {
+  def apply(a: T, b: T): T
+}
+
+class Addition[T <: Data](gen: T) extends BinaryOperation(gen) {
+  def apply(a: T, b: T): T = a + b
+}
+
+class ParametricBinaryOperation[T <: Data](
+  width: Int,
+  gen: => T,
+  op: BinaryOperation[T]
+) extends Module {
+  val io = IO(new Bundle {
+    val a   = Input(gen)
+    val b   = Input(gen)
+    val out = Output(gen)
+  })
+
+  io.out := op(io.a, io.b)
+}
+
+class Adder(width: Int) extends ParametricBinaryOperation(
+  width = width,
+  gen = UInt(width.W),
+  op = new Addition(UInt(width.W))
+) {}
+```
+
+This implementation has high variability:
+
+- To adapt to different data width variant requirements, only parameter values need to be modified, refactoring cost score is 10.
+- To adapt to different types of adders (like adders with carry), only need to implement new `BinaryOperation` class, refactoring cost score is 9.
+- To adapt to different operations (like subtractor), only need to implement new `BinaryOperation` class, refactoring cost score is 9.
+- To adapt to different input/output types (like floating-point), only need to pass different `gen` parameter, refactoring cost score is 10.
+- Considering all evaluation results, the final score is \boxed{10}.
+
+# Evaluation Steps
+
+You will be provided with a Chisel module code and its corresponding original design specification. To help you perform accurate and consistent evaluations, you will also be provided with several design specification variations.
+
+Your evaluation process should strictly follow these steps:
+
+1. Analyze the module code, identifying important features such as parameterized design, interface abstraction design, and module coupling degree. These features will affect the module's variability and are therefore crucial to your evaluation results.
+2. Understand the requirements of the original design specification and design specification variations.
+3. For each design specification variation, evaluate **the refactoring cost needed to adapt the current module design to that variation** and give a score, following these steps:
+    1. Identify affected functionality/structure
+    2. Evaluate the scope of required code changes (local/global)
+    3. Give a 1-10 score based on refactoring cost level definitions
+4. Synthesize all variation evaluation results to give an integer score from 1 to 10, representing the overall variability of the module design.
+
+# Output Format
+
+After comprehensive thinking and analysis, you need to output the final score in the format `\boxed{<SCORE>}`. Note that the score must be an integer between 1 and 10.
+
+# Important Notes
+
+- If the module has syntax errors or cannot meet the requirements of the original design specification, a score of 1 should be given directly.
+- When evaluating refactoring costs, don't base the evaluation on whether the module currently implements variation requirements, but rather on the changes that would need to be made to implement variant requirements under the current module design:
+    - If the module happens to meet certain variant requirements (e.g., variant requires 32-bit data width, and module is hardcoded to 32-bit) but doesn't provide parameterized design, it shouldn't receive a high score.
+    - If the module doesn't directly implement variant requirements but its design structure already considers variant requirement implementation (e.g., variant requires 32-bit data width, and module provides parameterized design), it can receive a high score.
+- "Hacking" behaviors should receive low scores. Hacking is defined as: implementing variant requirements through unreasonable means rather than through proper design structures. Such behaviors include but are not limited to:
+    - Using a boolean parameter to decide whether to enable a specific implementation, or using a switch to decide whether to enable a feature, should not be considered as implementation of variant requirements. This approach doesn't truly consider module design variability, but rather embeds a specific implementation in the module design. This not only increases module design complexity but also reduces maintainability and extensibility.
+    - Copy-pasting code segments and making minor modifications to support different scenarios. This not only leads to code duplication and redundancy but also reduces module readability and maintainability. Such practices should not be considered as implementation of variant requirements.
+- "Over-design" behaviors should also receive low scores. Over-design is defined as: introducing too much parameterization and abstraction levels in module design, leading to increased complexity and difficulty in understanding and maintaining. Such practices include but are not limited to:
+    - Over-parameterization: introducing unnecessary configuration parameters, leading to increased module design complexity and difficulty in understanding and maintenance.
+    - Over-abstraction: introducing too many abstraction levels that barely correspond to actual requirement changes that might be encountered.
+    - Meaningless abstraction: abstracting fundamentally different functionalities into the same interface, where the interface definition has almost no practical significance.
+- For parameterized design, the rationality and usability of parameters need to be considered:
+    - Effective parameterization: parameters should truly control architectural features (like data width, pipeline depth, memory size), and module internal logic should automatically adapt to parameter changes.
+    - Ineffective parameterization: if parameters are only used as constants (like val DATA_WIDTH = 32), but internal logic doesn't dynamically adjust accordingly (e.g., hardcoded width-related operations still exist), it cannot be considered as high variability.
+
+# Request
+
+Chisel module code:
+
+```scala
+{{ code }}
+```
+
+Original design specification:
+
+```text
+{{ original }}
+```
+
+Design specification variations:
+
+{% for var in variations %}
+Variation `{{ var.id }}`:
+```text
+{{ var.content }}
+```
+{% endfor %}

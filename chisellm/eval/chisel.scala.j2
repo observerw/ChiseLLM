@@ -1,0 +1,23 @@
+//> using scala "2.13"
+//> using dep "org.chipsalliance::chisel:6.7.0"
+//> using plugin "org.chipsalliance:::chisel-plugin:6.7.0"
+//> using options "-unchecked" "-deprecation" "-language:reflectiveCalls" "-feature" "-Xcheckinit" "-Ywarn-dead-code" "-Ywarn-unused"
+
+import chisel3._
+import chisel3.util._
+import _root_.circt.stage.ChiselStage
+
+{{ code }}
+
+object Main extends App {
+  val outputPath = args(0)
+
+  ChiselStage.emitSystemVerilog(
+    {{ top }}(),
+    firtoolOpts = Array(
+      "-disable-all-randomization",
+      "-strip-debug-info",
+      "-o", outputPath
+    )
+  )
+}

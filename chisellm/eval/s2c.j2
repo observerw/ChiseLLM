@@ -1,0 +1,141 @@
+You are tasked with implementing a Chisel3 module according to the design specification provided.
+
+# Imports
+
+The following imports are already included, extra import statements are not allowed:
+
+```scala
+import chisel3._
+import chisel3.util._
+```
+
+# Port Declaration
+
+You must define module ports using the `val io = FlatIO(new Bundle { /* ports */ })`. Any other ports defination method is not allowed and will be considered as an error.
+
+The ports you declared must strictly follow the specification, including the name and type. Extra ports or signals (such as extra clock or reset signals) not specified in the design specification will be considered as an error.
+
+# Module Declaration
+
+You must define the module and ports with the exact name as specified in the specification. **The module must extend `RawModule`** to avoid implicit clock and reset signal.
+
+For every sequential module (`RegInit`, `RegNext`, etc.) that requires clock and reset signal, **you must explicitly define their signal using`withClockAndReset`**, for example:
+
+```scala
+class Comb extends RawModule {
+  val io = FlatIO(new Bundle {
+    val in = Input(UInt(8.W))
+    val out = Output(UInt(8.W))
+  })
+    // combinational logic
+}
+
+class Seq extends RawModule {
+  val io = FlatIO(new Bundle {
+    val clk = Input(Clock())
+    val rst = Input(Bool())
+  })
+
+  // use `withClockAndReset` to specify clock and reset signal for each sequential modules
+  val reg = withClockAndReset(io.clk, io.rst) { RegInit(0.U) }
+}
+
+class MultiClockSeq extends RawModule {
+  val io = FlatIO(new Bundle {
+    val clk_a = Input(Clock())
+    val rst_a = Input(Bool())
+
+    val clk_b = Input(Clock())
+    val rst_b = Input(Bool())
+  })
+
+  // register that uses clk_a and rst_a
+  val reg_a = withClockAndReset(io.clk_a, io.rst_a) { RegInit(0.U) }
+  // register that uses clk_b and rst_b
+  val reg_b = withClockAndReset(io.clk_b, io.rst_b) { RegInit(0.U) }
+}
+```
+
+# Async Reset
+
+For sequential module that requires an async reset signal, you must provide an async version of the reset signal with `rst.asAsyncReset`, for example:
+
+```scala
+class Foo extends RawModule {
+  val io = FlatIO(new Bundle {
+    val clk = Input(Clock())
+    val rst = Input(Bool())
+  })
+
+  // define async reset signal with `.asAsyncReset`
+  val arst = io.rst.asAsyncReset
+
+  // provide async reset signal to the sequential module instead of the original reset signal
+  val reg = withClockAndReset(io.clk, io.arst) { RegInit(0.U) }
+}
+```
+
+# Active-Low Signal
+
+For sequential module that requires an active-low clock and/or reset signal, you must provide an active-low version of the signal, for example:
+
+```scala
+class Foo extends RawModule {
+  val io = FlatIO(new Bundle {
+    val clk = Input(Clock())
+    val rst = Input(Bool())
+  })
+
+  // define active-low clock signal, use `.asBool` then `.asClock`
+  // ATTENTION: the bracket `()` is mandatory
+  val clk_n = (!io.clk.asBool).asClock
+  // define active-low async reset signal, use `.asAsyncReset`
+  // ATTENTION: the bracket `()` is mandatory
+  val arst_n = (!io.rst).asAsyncReset
+
+  // provide active-low clock and reset signal to the sequential module instead of the original signals
+  val reg = withClockAndReset(io.clk_n, io.arst_n) { RegInit(0.U) }
+}
+```
+
+# Output
+
+Your output must at least include a `class {{ top }}` that extends `RawModule`, and a `object {{ top }}` that contains a method `apply()` to create an instance of the module.
+
+- The arguments of `apply()` are class parameters of `class {{ top }}` (if any), not the input ports.
+- The parameters of `apply()` must be defined with default values, so that it can be called without any arguments.
+
+Your output code must be **in a Markdown code block with `{result}` identifier**, as shown below:
+
+```scala {result}
+// ... other modules if needed...
+
+class {{ top }} extends RawModule {
+  // ... your code here...
+}
+
+object {{ top }} {
+    def apply( /* parameters */ ): {{ top }} = {
+        new {{ top }}( /* parameters */ )
+    }
+}
+```
+
+# Requirements
+
+- All code must use Chisel 3 and Scala 2.13 syntax.
+- Module name and ports must strictly follow the specification, even if it will violate the Scala naming convention.
+- Code structure requirements:
+  - All internal signals and modules need meaningful names.
+  - Add comments to explain key functionality.
+  - Avoid generating redundant logic.
+- Do not define any additional ports or signals (e.g. extra clock or reset signals) not specified in the design specification.
+- In Chisel module, unconnected wires are not allowed. Make sure all output IO signals are assigned under all conditions.
+
+# Request
+
+Design Specification:
+
+```text
+{{ spec }}
+```
